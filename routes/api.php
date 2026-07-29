@@ -1,20 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExpenseController;
 
-Route::get('/expenses', function () {
-
-    return [
-        [
-            'id' => 1,
-            'title' => 'Lunch',
-            'amount' => 150,
-        ],
-        [
-            'id' => 2,
-            'title' => 'Coffee',
-            'amount' => 90,
-        ],
-    ];
-
-});
+Route::apiResource('expenses', ExpenseController::class);
