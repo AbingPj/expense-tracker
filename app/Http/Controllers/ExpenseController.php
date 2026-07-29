@@ -12,7 +12,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        //
+        return Expense::latest()->get();
     }
 
     /**
@@ -28,7 +28,16 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'expense_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+    
+        $expense = Expense::create($validated);
+    
+        return response()->json($expense, 201);
     }
 
     /**
