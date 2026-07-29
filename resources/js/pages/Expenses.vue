@@ -1,7 +1,6 @@
 <template>
     <h1 class="text-2xl font-bold mb-4">Expenses</h1>
 
-
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
         <div class="h-32 rounded bg-gray-300">
             <div class="mx-auto max-w-md space-y-4 rounded-lg border border-gray-300 bg-gray-100 p-4 dark:border-gray-600 dark:bg-gray-800">
@@ -20,14 +19,14 @@
                     <input v-model="form.expense_date" class="mt-1 w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="date" type="date" placeholder="" />
                 </div>
 
-          
-
                 <div>
                     <label class="block text-sm font-medium text-gray-900 dark:text-white" for="message"> Note </label>
                     <textarea v-model="form.notes" class="mt-1 w-full resize-none rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="note" rows="4" placeholder="Your note"></textarea>
                 </div>
 
-                <button @click="saveNewExpense()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">Save</button>
+                <button :disabled="loading" @click="saveNewExpense()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
+                        {{ loading ? 'Saving...' : 'Save' }}
+                </button>
             </div>
         </div>
         <div class="h-32 rounded bg-gray-300 lg:col-span-2">
@@ -88,19 +87,19 @@ const saveNewExpense = async () => {
         // console.log(...form);
         await createExpense(form);
         resetForm();
-        loadExpenses();
+        await loadExpenses();
         return;
     } catch (error) {
         console.error("Failed to save expenses:", error);
     } finally {
         loading.value = false;
     }
-}
+};
 
-const resetForm = async () => {
+const resetForm = () => {
     form.title = "";
     form.amount = "";
-    form.date = "";
-    form.note = "";
-}
+    form.expense_date = "";
+    form.notes = "";
+};
 </script>
