@@ -2,7 +2,7 @@
     <h1 class="text-2xl font-bold mb-4">Expenses</h1>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
-        <div class="h-32 rounded bg-gray-300">
+        <div class="h-auto rounded bg-gray-300">
             <div class="mx-auto max-w-md space-y-4 rounded-lg border border-gray-300 bg-gray-100 p-4 dark:border-gray-600 dark:bg-gray-800">
                 <div>
                     <label class="block text-sm font-medium text-gray-900 dark:text-white" for="name"> Title </label>
@@ -29,7 +29,7 @@
                 </button>
             </div>
         </div>
-        <div class="h-32 rounded bg-gray-300 lg:col-span-2">
+        <div class="h-auto rounded bg-gray-300 lg:col-span-2">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y-2 divide-gray-200">
                     <thead class="ltr:text-left rtl:text-right">
