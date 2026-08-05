@@ -11,7 +11,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-900 dark:text-white" for="name"> Amount </label>
-                    <input v-model="form.amount" class="mt-1 w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="amount" type="text" placeholder="" />
+                    <input v-model="form.amount" class="mt-1 w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="amount" type="number" step="0.01" min="0" placeholder="" />
                 </div>
 
                 <div>
@@ -24,8 +24,8 @@
                     <textarea v-model="form.notes" class="mt-1 w-full resize-none rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="note" rows="4" placeholder="Your note"></textarea>
                 </div>
 
-                <button :disabled="loading" @click="saveNewExpense()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
-                        {{ loading ? 'Saving...' : 'Save' }}
+                <button :disabled="loading" @click="saveExpense()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
+                    {{ loading ? "Saving..." : "Save" }}
                 </button>
             </div>
         </div>
@@ -81,7 +81,7 @@ onMounted(() => {
     loadExpenses();
 });
 
-const saveNewExpense = async () => {
+const saveExpense = async () => {
     try {
         loading.value = true;
         // console.log(...form);
