@@ -48,7 +48,6 @@
                             <td class="px-3 py-2 whitespace-nowrap">{{ expense.expense_date }}</td>
                             <td class="px-3 py-2 whitespace-nowrap">
                                 <div class="inline-flex">
-
                                     <button
                                         class="-ms-px border border-gray-200 px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:outline-none disabled:pointer-events-auto disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white dark:focus:ring-offset-gray-900"
                                         aria-label="Edit"
@@ -59,6 +58,7 @@
                                     </button>
 
                                     <button
+                                        @click="removeExpense(expense.id)"
                                         class="-ms-px rounded-e-sm border border-gray-200 px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:outline-none disabled:pointer-events-auto disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white dark:focus:ring-offset-gray-900"
                                         aria-label="Delete"
                                     >
@@ -82,7 +82,7 @@
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
-import { getExpenses, createExpense } from "@/services/expenseService";
+import { getExpenses, createExpense, deleteExpense } from "@/services/expenseService";
 
 const expenses = ref([]);
 const loading = ref(false);
@@ -118,6 +118,21 @@ const saveExpense = async () => {
         return;
     } catch (error) {
         console.error("Failed to save expenses:", error);
+    } finally {
+        loading.value = false;
+    }
+};
+
+const removeExpense = async (id) => {
+    try {
+        if (!confirm("Delete this expense?")) {
+            return;
+        }
+        loading.value = true;
+        await deleteExpense(id);
+        await loadExpenses();
+    } catch (error) {
+        console.error("Failed to delete expense:", error);
     } finally {
         loading.value = false;
     }
