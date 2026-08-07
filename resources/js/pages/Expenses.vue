@@ -24,8 +24,11 @@
                     <textarea v-model="form.notes" class="mt-1 w-full resize-none rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="note" rows="4" placeholder="Your note"></textarea>
                 </div>
 
-                <button :disabled="loading" @click="saveExpense()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
-                    {{ loading ? "Saving..." : "Save" }}
+                <button :disabled="loading" @click="save()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
+                    {{ loading
+                        ? (editingId ? 'Updating...' : 'Saving...')
+                        : (editingId ? 'Update' : 'Save')
+                    }}
                 </button>
             </div>
         </div>
@@ -49,6 +52,7 @@
                             <td class="px-3 py-2 whitespace-nowrap">
                                 <div class="inline-flex">
                                     <button
+                                        @click="editExpense(expense.id)"
                                         class="-ms-px border border-gray-200 px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:outline-none disabled:pointer-events-auto disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white dark:focus:ring-offset-gray-900"
                                         aria-label="Edit"
                                     >
@@ -82,7 +86,7 @@
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
-import { getExpenses, createExpense, deleteExpense } from "@/services/expenseService";
+import { getExpenses, createExpense, deleteExpense, updateExpense } from "@/services/expenseService";
 
 const expenses = ref([]);
 const loading = ref(false);
@@ -92,6 +96,7 @@ const form = reactive({
     expense_date: "",
     notes: "",
 });
+
 
 const loadExpenses = async () => {
     try {
@@ -107,6 +112,14 @@ const loadExpenses = async () => {
 onMounted(() => {
     loadExpenses();
 });
+
+const save = async () => {
+    if (editingId.value) {
+        await updateEx();
+    } else {
+        await saveExpense();
+    }
+};
 
 const saveExpense = async () => {
     try {
@@ -149,6 +162,33 @@ const formatAmount = (num) => {
     if (num) {
         num = Number(num);
         return num.toLocaleString();
+    }
+};
+
+
+const editingId = ref(null);
+const editExpense = (id) => {
+    const expense = expenses.value.find((e) => e.id === id);
+    if (expense) {
+        form.title = expense.title;
+        form.amount = expense.amount;
+        form.expense_date = expense.expense_date;
+        form.notes = expense.notes;
+        editingId.value = id;
+    }
+};
+
+const updateEx = async () => {
+    try {
+        loading.value = true;
+        await updateExpense(editingId.value, form);
+        resetForm();
+        editingId.value = null;
+        await loadExpenses();
+    } catch (error) {
+        console.error("Failed to update expense:", error);
+    } finally {
+        loading.value = false;
     }
 };
 </script>
