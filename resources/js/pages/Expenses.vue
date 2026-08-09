@@ -123,16 +123,15 @@ const save = async () => {
 
 const saveExpense = async () => {
     try {
+        if (loading.value == true) return; 
         loading.value = true;
         // console.log(...form);
         await createExpense(form);
         resetForm();
         await loadExpenses();
-        return;
+        loading.value = false;
     } catch (error) {
         console.error("Failed to save expenses:", error);
-    } finally {
-        loading.value = false;
     }
 };
 
@@ -180,15 +179,15 @@ const editExpense = (id) => {
 
 const updateEx = async () => {
     try {
+        if (loading.value == true) return;
         loading.value = true;
         await updateExpense(editingId.value, form);
         resetForm();
         editingId.value = null;
         await loadExpenses();
+        loading.value = false;
     } catch (error) {
         console.error("Failed to update expense:", error);
-    } finally {
-        loading.value = false;
     }
 };
 </script>
