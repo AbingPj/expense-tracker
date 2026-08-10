@@ -24,11 +24,8 @@
                     <textarea v-model="form.notes" class="mt-1 w-full resize-none rounded-lg border-gray-300 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-white" id="note" rows="4" placeholder="Your note"></textarea>
                 </div>
 
-                <button :disabled="loading" @click="save()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
-                    {{ loading
-                        ? (editingId ? 'Updating...' : 'Saving...')
-                        : (editingId ? 'Update' : 'Save')
-                    }}
+                <button :disabled="isSaving" @click="save()" class="block w-full rounded-lg border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition-colors hover:bg-transparent hover:text-indigo-600 dark:hover:bg-indigo-700 dark:hover:text-white" type="button">
+                   {{ buttonText }}
                 </button>
             </div>
         </div>
@@ -85,11 +82,12 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
 import { getExpenses, createExpense, deleteExpense, updateExpense } from "@/services/expenseService";
 
 const expenses = ref([]);
-const loading = ref(false);
+const isLoading = ref(false) // Loading the table
+const isSaving = ref(false)  // Saving or updating
 const form = reactive({
     title: "",
     amount: "",
@@ -100,12 +98,12 @@ const form = reactive({
 
 const loadExpenses = async () => {
     try {
-        loading.value = true;
+        isLoading.value = true;
         expenses.value = await getExpenses();
     } catch (error) {
         console.error("Failed to load expenses:", error);
     } finally {
-        loading.value = false;
+        isLoading.value = false;
     }
 };
 
@@ -123,13 +121,12 @@ const save = async () => {
 
 const saveExpense = async () => {
     try {
-        if (loading.value == true) return; 
-        loading.value = true;
-        // console.log(...form);
+        if (isSaving.value == true) return; 
+        isSaving.value = true;
         await createExpense(form);
         resetForm();
         await loadExpenses();
-        loading.value = false;
+        isSaving.value = false;
     } catch (error) {
         console.error("Failed to save expenses:", error);
     }
@@ -140,13 +137,13 @@ const removeExpense = async (id) => {
         if (!confirm("Delete this expense?")) {
             return;
         }
-        loading.value = true;
+        isLoading.value = true;
         await deleteExpense(id);
         await loadExpenses();
     } catch (error) {
         console.error("Failed to delete expense:", error);
     } finally {
-        loading.value = false;
+        isLoading.value = false;
     }
 };
 
@@ -179,15 +176,24 @@ const editExpense = (id) => {
 
 const updateEx = async () => {
     try {
-        if (loading.value == true) return;
-        loading.value = true;
+        if (isSaving.value == true) return;
+        isSaving.value = true;
         await updateExpense(editingId.value, form);
         resetForm();
         editingId.value = null;
         await loadExpenses();
-        loading.value = false;
+        isSaving.value = false;
     } catch (error) {
         console.error("Failed to update expense:", error);
     }
 };
+
+const buttonText = computed(() => {
+    if (isSaving.value) {
+        return editingId.value ? 'Updating...' : 'Saving...'
+    }
+    return editingId.value ? 'Update' : 'Save'
+})
+
+
 </script>
